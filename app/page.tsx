@@ -241,18 +241,6 @@ export default function Home() {
                       <option value="mp4">MP4 (Video)</option>
                       <option value="mp3">MP3 (Audio)</option>
                     </select>
-
-                    {/* Advanced Options Toggle */}
-                    <button
-                      onClick={() => setUseAdvanced(!useAdvanced)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                        useAdvanced 
-                          ? 'bg-green-500 text-white' 
-                          : 'bg-[#1A1A1A]/50 text-gray-400 hover:text-white border border-white/10'
-                      }`}
-                    >
-                      Advanced {useAdvanced ? '✓' : ''}
-                    </button>
                   </>
                 )}
               </div>
