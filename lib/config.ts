@@ -16,7 +16,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1),
   
   // Redis
-  REDIS_URL: z.string().min(1),
+  REDIS_URL: z.string().min(1).optional(),
   
   // Worker
   WORKER_CONCURRENCY: z.string().transform(Number).default('2'),

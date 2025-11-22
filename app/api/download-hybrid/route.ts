@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(req: NextRequest) {
   try {
-    const { url, quality = 'best', format = 'mp4' } = await req.json();
+    const { url, quality = '720', format = 'mp4', startTime, endTime } = await req.json();
 
     if (!url) {
       return NextResponse.json({ error: 'URL is required' }, { status: 400 });
@@ -95,14 +95,25 @@ export async function POST(req: NextRequest) {
       console.log('Downloaded successfully with Android client (quality may be limited)');
     }
 
-    // Read the downloaded file
-    const fileBuffer = await fs.readFile(outputPath);
-    const stats = await fs.stat(outputPath);
+    // Handle timestamp trimming if requested
+    let finalPath = outputPath;
+    if (startTime || endTime) {
+      const trimmedPath = path.join(tempDir, `${fileId}_trimmed.${format}`);
+      await trimVideo(outputPath, trimmedPath, startTime, endTime, ffmpegPath);
+      
+      // Delete original and use trimmed version
+      await fs.unlink(outputPath).catch(() => {});
+      finalPath = trimmedPath;
+    }
+
+    // Read the final file
+    const fileBuffer = await fs.readFile(finalPath);
+    const stats = await fs.stat(finalPath);
     
     console.log(`Downloaded file size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
 
     // Clean up
-    await fs.unlink(outputPath).catch(() => {});
+    await fs.unlink(finalPath).catch(() => {});
 
     // Return file
     return new NextResponse(fileBuffer, {
@@ -142,4 +153,89 @@ async function executeDownload(args: string[]): Promise<void> {
 
     proc.on('error', reject);
   });
+}
+
+async function trimVideo(
+  inputPath: string, 
+  outputPath: string, 
+  startTime?: string, 
+  endTime?: string,
+  ffmpegPath?: string
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const ffmpegBin = ffmpegPath ? path.join(ffmpegPath, 'ffmpeg.exe') : 'ffmpeg';
+    
+    // Build ffmpeg command
+    const args = ['-i', inputPath];
+    
+    // Add start time if provided
+    if (startTime) {
+      args.push('-ss', startTime);
+    }
+    
+    // Add duration if end time is provided
+    if (endTime && startTime) {
+      // Calculate duration from start to end
+      const duration = calculateDuration(startTime, endTime);
+      if (duration) {
+        args.push('-t', duration);
+      }
+    } else if (endTime) {
+      // If only end time, use -to
+      args.push('-to', endTime);
+    }
+    
+    // Copy codecs for faster processing
+    args.push('-c', 'copy', '-avoid_negative_ts', 'make_zero', outputPath);
+    
+    console.log('Trimming video:', ffmpegBin, args.join(' '));
+    
+    const proc = spawn(ffmpegBin, args);
+    let stderr = '';
+    
+    proc.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+    
+    proc.on('close', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`FFmpeg trim failed: ${stderr}`));
+      }
+    });
+    
+    proc.on('error', reject);
+  });
+}
+
+function calculateDuration(startTime: string, endTime: string): string {
+  // Convert time strings to seconds
+  const toSeconds = (time: string): number => {
+    const parts = time.split(':').reverse();
+    let seconds = 0;
+    for (let i = 0; i < parts.length; i++) {
+      seconds += parseFloat(parts[i]) * Math.pow(60, i);
+    }
+    return seconds;
+  };
+  
+  const startSeconds = toSeconds(startTime);
+  const endSeconds = toSeconds(endTime);
+  const duration = endSeconds - startSeconds;
+  
+  if (duration <= 0) {
+    throw new Error('End time must be after start time');
+  }
+  
+  // Convert back to HH:MM:SS format
+  const hours = Math.floor(duration / 3600);
+  const minutes = Math.floor((duration % 3600) / 60);
+  const seconds = duration % 60;
+  
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toFixed(3).padStart(6, '0')}`;
+  } else {
+    return `${minutes}:${seconds.toFixed(3).padStart(6, '0')}`;
+  }
 }

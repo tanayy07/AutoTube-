@@ -1,0 +1,15 @@
+# YouTube cookies file
+# 
+# IMPORTANT: This file should contain your YouTube cookies for high-quality downloads
+# 
+# How to get cookies:
+# 1. Install browser extension "Get cookies.txt LOCALLY" 
+# 2. Log into YouTube in your browser
+# 3. Click the extension on any YouTube page
+# 4. Save the cookies to a file named 'cookies.txt' in this directory
+# 
+# The cookies.txt file is in .gitignore and should NEVER be committed
+# 
+# Format: Netscape HTTP Cookie File
+# Example line (DO NOT USE - get your own):
+# .youtube.com	TRUE	/	TRUE	1234567890	COOKIE_NAME	cookie_value

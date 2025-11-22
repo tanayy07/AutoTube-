@@ -8,11 +8,11 @@ import { config } from './config';
 import { JobData, JobResult } from './types';
 import { logger } from './logger';
 
-// Create Redis connection
-const connection = new IORedis(config.REDIS_URL, {
+// Create Redis connection only if REDIS_URL is provided
+const connection = config.REDIS_URL ? new IORedis(config.REDIS_URL, {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
-});
+}) : null;
 
 // Create download queue
 export const downloadQueue = new Queue<JobData, JobResult>('downloads', {

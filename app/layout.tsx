@@ -15,18 +15,18 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'YTDownloader - Fast YouTube Downloads',
+  title: 'AutoTube - Fast YouTube Downloads',
   description: 'Download YouTube videos, MP3s, and clips directly from Telegram. No ads, no limits, just pure speed.',
   keywords: 'youtube downloader, telegram bot, mp3 converter, video downloader, yt-dlp',
-  authors: [{ name: 'YTDownloader' }],
+  authors: [{ name: 'AutoTube' }],
   openGraph: {
-    title: 'YTDownloader - Fast YouTube Downloads',
+    title: 'AutoTube - Fast YouTube Downloads',
     description: 'Download YouTube videos directly from Telegram',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'YTDownloader',
+    title: 'AutoTube',
     description: 'Fast YouTube downloads via Telegram',
   },
   icons: {
