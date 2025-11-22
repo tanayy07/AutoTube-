@@ -2,6 +2,12 @@
 
 A production-ready Telegram bot that downloads YouTube videos with custom trimming and quality selection. Built with Next.js, BullMQ, PostgreSQL, and yt-dlp.
 
+## 🎥 Demo
+
+https://github.com/user-attachments/assets/YOUR-VIDEO-ID-HERE
+
+> *Click the image above to watch the demo video*
+
 ## Features
 
 - 🎬 Download YouTube videos directly through Telegram
