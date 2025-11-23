@@ -4,7 +4,7 @@ A production-ready Telegram bot that downloads YouTube videos with custom trimmi
 
 ## 🎥 Demo
 
-https://www.youtube.com/watch?v=PbdtciyUgz0
+https://youtu.be/fSEPWr8IZuo
 
 > *Click the image above to watch the demo video*
 
